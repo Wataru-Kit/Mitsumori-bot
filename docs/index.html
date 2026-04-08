@@ -723,6 +723,17 @@ document.addEventListener('DOMContentLoaded', function() {
  * GAS API 呼び出し (fetch版)
  * ========================================
  */
+function ensureGasOk_(route, json) {
+  if (!json || typeof json !== 'object') {
+    throw new Error('[' + route + '] サーバ応答が不正です');
+  }
+  if (json.ok === false) {
+    var msg = json.message ? String(json.message) : 'unknown error';
+    throw new Error('[' + route + '] ' + msg);
+  }
+  return json;
+}
+
 function gasGet_(route, params) {
   var url = new URL(CONFIG.gasUrl);
   url.searchParams.set('route', route);
@@ -730,7 +741,8 @@ function gasGet_(route, params) {
     if (params[key] != null) url.searchParams.set(key, params[key]);
   });
   return fetch(url.toString(), { redirect: 'follow' })
-    .then(function(r) { return r.json(); });
+    .then(function(r) { return r.json(); })
+    .then(function(json) { return ensureGasOk_(route, json); });
 }
 
 function gasPost_(route, body) {
@@ -742,7 +754,8 @@ function gasPost_(route, body) {
     body: JSON.stringify(body || {}),
     redirect: 'follow',
   })
-    .then(function(r) { return r.json(); });
+    .then(function(r) { return r.json(); })
+    .then(function(json) { return ensureGasOk_(route, json); });
 }
 
 /**
