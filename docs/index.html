@@ -1106,10 +1106,12 @@ async function saveCurrentDocument_(status) {
     toast_(status === 'issued' ? 'PDFを発行しました' : '下書きを保存しました');
     showSection_('document');
 
-    // PDF発行時にLIFFのトークにURLを送信
-    if (status === 'issued' && res.pdf && res.pdf.downloadUrl) {
-      await sendPdfUrlToChat_(res.document, res.pdf);
-    }
+    // PDF発行時にLIFFのトークへURLを送信する処理。
+    // → トークへ投稿すると公式アカウント側の自動応答が走ってしまうため一時停止中。
+    //    再開する場合は下記コメントを外してください。
+    // if (status === 'issued' && res.pdf && res.pdf.downloadUrl) {
+    //   await sendPdfUrlToChat_(res.document, res.pdf);
+    // }
   } catch (err) {
     console.error(err);
     toast_(normalizeErrorMessage_(err), 'error');
